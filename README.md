@@ -57,3 +57,41 @@ graph TD
     User -->|"A. Access Site"| React
     React -->|"B. REST API (JSON)<br/>Request Physics Calc"| Spring
     Spring -.->|"C. Return Computation"| React
+```
+
+---
+
+## 🚀 Getting Started
+
+### Prerequisites
+
+Ensure you have **Node.js (v18 or higher)** installed on your local machine.
+
+### Installation & Local Development
+
+1. Clone the repository:
+   ```bash
+   git clone [https://github.com/your-username/darts-sim-web.git](https://github.com/your-username/darts-sim-web.git)
+   cd darts-sim-web
+   ```
+
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
+
+3. Start the local development server:
+   ```bash
+   npm run dev
+   ```
+
+4. Open `http://localhost:5173` in your browser.
+
+*Note: To fetch live data locally, ensure the backend API server (`darts-sim-api`) is running on `http://localhost:8080`.*
+
+---
+
+## 📈 CI/CD & Deployment
+
+- **Production Deployment:** Automatically deployed to **Vercel** on every push to the `main` branch.
+- **Environment Variables:** API endpoints are managed dynamically via environment variables for seamless environment switching between local and production.
