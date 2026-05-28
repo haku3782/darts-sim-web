@@ -1,73 +1,59 @@
-# React + TypeScript + Vite
+# Darts Physics Simulator (Frontend)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+*Read this in other languages: [English](README.md), [日本語](README.ja.md)*
 
-Currently, two official plugins are available:
+An interactive 3D darts physics simulation and setting optimization web application. This project is built with a modern, decoupled cloud-native architecture, separating the high-fidelity frontend from the heavy-computation backend.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+🚀 **[Live Demo URL](https://your-app.vercel.app)** *(Replace with your actual Vercel URL)*
 
-## React Compiler
+🔗 **Backend Repository:** [darts-sim-api](https://github.com/your-username/darts-sim-api)
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+---
 
-## Expanding the ESLint configuration
+## 🎯 Key Features
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+- **3D Physics Visualization:** Real-time rendering of dart trajectories, factoring in barrel/shaft weight distribution and aerodynamics.
+- **Setting Simulator:** Interactive configuration to test different combinations of barrels, shafts, and flights.
+- **Cloud Native Pipeline:** Fully automated CI/CD pipeline ensuring reliable and continuous deployment.
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## 🛠 Tech Stack
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+- **Framework:** React 18 (TypeScript)
+- **Build Tool:** Vite
+- **Styling/UI:** Modern CSS / Component-driven architecture
+- **Hosting/Deployment:** Vercel
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+---
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## 🏗 System Architecture
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+This application adopts a decoupled architecture to isolate user interface concerns from heavy physics computations.
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
-```
+```mermaid
+graph TD
+    Dev((Developer))
+    User((End User))
+
+    subgraph "Frontend Hosting (Vercel)"
+        React[React / TypeScript<br/>UI & 3D Rendering]
+    end
+
+    subgraph "Backend Hosting (Render)"
+        Spring[Spring Boot / Java 21<br/>Physics Engine API]
+        Docker((Docker Container))
+        Spring --- Docker
+    end
+
+    subgraph "CI/CD & Source Control"
+        Repo[(GitHub)]
+        Actions[GitHub Actions<br/>Automated Testing]
+    end
+
+    Dev -->|"1. Push Code"| Repo
+    Repo -->|"2. Trigger"| Actions
+    Actions -->|"3. Deploy if Test Passes"| Spring
+    Repo -->|"Auto Deploy"| React
+
+    User -->|"A. Access Site"| React
+    React -->|"B. REST API (JSON)<br/>Request Physics Calc"| Spring
+    Spring -.->|"C. Return Computation"| React
