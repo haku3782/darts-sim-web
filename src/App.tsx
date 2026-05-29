@@ -6,7 +6,7 @@ function App() {
 
   useEffect(() => {
     // バックエンドのAPIへリクエストを送る
-    fetch('http://localhost:8080/api/hello')
+    fetch('https://darts-sim-api.onrender.com/api/hello')
       .then((response) => {
         if (!response.ok) {
           throw new Error('ネットワークエラー')
