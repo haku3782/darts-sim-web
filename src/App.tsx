@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   LineChart,
   Line,
@@ -20,12 +20,19 @@ interface TrajectoryPoint {
   z: number;
 }
 
+interface SimulationRecord {
+  id: number;
+  initialVelocity: number;
+  angle: number;
+  drag: number;
+  createdAt: string;
+}
+
 export default function App() {
   // --- State管理（初期値） ---
   const [gameRule, setGameRule] = useState<GameRule>("SOFT");
   const [weight, setWeight] = useState(20.0);
   const [drag, setDrag] = useState(0.0005);
-  // 修正前: const [speed, setSpeed] = useState(10.0);
   const [speed, setSpeed] = useState(25.0); // 初心者〜中級者の平均的なダーツ初速(20〜30km/h)に設定
   const [angle, setAngle] = useState(10.0);
   const [releaseHeight, setReleaseHeight] = useState(1.65);
@@ -34,12 +41,44 @@ export default function App() {
   const [trajectory, setTrajectory] = useState<TrajectoryPoint[]>([]);
   const [isLoading, setIsLoading] = useState(false);
 
+  // 履歴データを保存するためのState
+  const [history, setHistory] = useState<SimulationRecord[]>([]);
+
+  const fetchHistory = async () => {
+    try {
+      const response = await fetch(
+        "https://darts-sim-api.onrender.com/api/history",
+      );
+      if (response.ok) {
+        const data = await response.json();
+        setHistory(data);
+      }
+    } catch (error) {
+      console.error("履歴の取得に失敗しました", error);
+    }
+  };
+
+  useEffect(() => {
+    const loadHistory = async () => {
+      try {
+        const response = await fetch(
+          "https://darts-sim-api.onrender.com/api/history",
+        );
+        if (response.ok) {
+          const data = await response.json();
+          setHistory(data);
+        }
+      } catch (error) {
+        console.error("履歴の取得に失敗しました", error);
+      }
+    };
+    loadHistory();
+  }, []);
+
   // --- API呼び出し関数 ---
   const runSimulation = async () => {
     setIsLoading(true);
     try {
-      // ⚠️ ここをご自身のRenderのURL、またはローカルのURL(http://localhost:8080/api/simulate)に変更してください
-      //const apiUrl = "http://localhost:8080/api/simulate";
       const apiUrl = "https://darts-sim-api.onrender.com/api/simulate";
 
       const response = await fetch(apiUrl, {
@@ -63,6 +102,9 @@ export default function App() {
 
       const data = await response.json();
       setTrajectory(data.trajectory);
+
+      // シミュレーションが終わったら、最新の履歴を再取得して表を更新する
+      fetchHistory();
     } catch (error) {
       console.error("シミュレーションに失敗しました:", error);
       alert(
@@ -275,6 +317,46 @@ export default function App() {
             </ResponsiveContainer>
           )}
         </div>
+      </div>
+
+      {/* ==========================================
+          ▼ 追記: 履歴表示エリア
+          ========================================== */}
+      <div style={{ marginTop: "40px" }}>
+        <h3>📊 過去のシミュレーション履歴</h3>
+        <table
+          border={1}
+          style={{
+            width: "100%",
+            textAlign: "center",
+            borderCollapse: "collapse",
+            backgroundColor: "#fff",
+          }}
+        >
+          <thead style={{ backgroundColor: "#f0f0f0" }}>
+            <tr>
+              <th style={{ padding: "8px" }}>ID</th>
+              <th style={{ padding: "8px" }}>初速 (km/h)</th>
+              <th style={{ padding: "8px" }}>角度 (度)</th>
+              <th style={{ padding: "8px" }}>空気抵抗</th>
+              <th style={{ padding: "8px" }}>実行日時</th>
+            </tr>
+          </thead>
+          <tbody>
+            {history.map((record) => (
+              <tr key={record.id}>
+                <td style={{ padding: "8px" }}>{record.id}</td>
+                {/* バックエンドから返ってくるJSONのキー名に合わせます */}
+                <td style={{ padding: "8px" }}>{record.initialVelocity}</td>
+                <td style={{ padding: "8px" }}>{record.angle}</td>
+                <td style={{ padding: "8px" }}>{record.drag}</td>
+                <td style={{ padding: "8px" }}>
+                  {new Date(record.createdAt).toLocaleString()}
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
       </div>
     </div>
   );
