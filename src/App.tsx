@@ -39,7 +39,8 @@ export default function App() {
     setIsLoading(true);
     try {
       // ⚠️ ここをご自身のRenderのURL、またはローカルのURL(http://localhost:8080/api/simulate)に変更してください
-      const apiUrl = "http://localhost:8080/api/simulate"; //https://https://darts-sim-api.onrender.com/api/hello
+      //const apiUrl = "http://localhost:8080/api/simulate";
+      const apiUrl = "https://darts-sim-api.onrender.com/api/simulate";
 
       const response = await fetch(apiUrl, {
         method: "POST",
